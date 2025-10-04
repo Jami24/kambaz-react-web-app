@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function KambazNavigation() {
+export default function Navigation() {
     return (
         <div id="wd-kambaz-navigation">
             <a href="https://www.northeastern.edu/" id="wd-neu-link" target="_blank">Northeastern</a><br/>
