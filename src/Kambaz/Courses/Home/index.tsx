@@ -3,17 +3,19 @@ import CourseStatus from "./Status";
 
 export default function Home() {
     return (
-        <table id="wd-home">
-            <tbody>
-            <tr>
-                <td valign="top">
+        <div id="wd-home">
+            {/* flex layout instead of table */}
+            <div className="d-flex" id="wd-home">
+                {/* Left: modules content */}
+                <div className="flex-fill me-3">
                     <Modules />
-                </td>
-                <td valign="top">
+                </div>
+
+                {/* Right: course status sidebar */}
+                <div className="d-none d-lg-block">
                     <CourseStatus />
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
+            </div>
+        </div>
     );
 }
