@@ -15,52 +15,43 @@ import { IoEllipsisVertical } from "react-icons/io5";
 import * as db from "../../Database";
 
 export default function Assignments() {
-    const { cid = "1234" } = useParams();
+    const { cid = "RS101" } = useParams();
     const [open, setOpen] = useState(true);
 
+    // Only assignments for this course
     const assignmentsForCourse = db.assignments.filter(
         (a: any) => a.course === cid
     );
 
     return (
         <div id="wd-assignments" className="mt-3">
-            {/* Top toolbar: search + buttons */}
+            {/* Toolbar */}
             <div className="d-flex align-items-center mb-3">
                 <Form className="flex-grow-1 me-3">
                     <InputGroup>
                         <InputGroup.Text>
                             <FaSearch />
                         </InputGroup.Text>
-                        <Form.Control id="wd-search-assignment" placeholder="Search..." />
+                        <Form.Control placeholder="Search..." />
                     </InputGroup>
                 </Form>
 
-                <Button id="wd-add-assignment-group" variant="secondary" className="me-2">
+                <Button variant="secondary" className="me-2">
                     + Group
                 </Button>
-                <Button id="wd-add-assignment" variant="danger">
-                    + Assignment
-                </Button>
+                <Button variant="danger">+ Assignment</Button>
             </div>
 
             <div className="border rounded">
-                {/* Header row (caret only clickable) */}
-                <div
-                    id="wd-assignments-title"
-                    className="d-flex justify-content-between align-items-center px-3 py-2 bg-light"
-                >
+                {/* Header */}
+                <div className="d-flex justify-content-between align-items-center px-3 py-2 bg-light">
                     <div className="d-flex align-items-center">
-                        <div className="d-flex align-items-center justify-content-center me-2">
-                            <BsGripVertical className="text-secondary me-2" />
-                        </div>
+                        <BsGripVertical className="text-secondary me-2" />
 
                         <span
-                            className="d-inline-flex align-items-center justify-content-center me-2"
                             style={{ width: 16, cursor: "pointer" }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setOpen((prev) => !prev);
-                            }}
+                            onClick={() => setOpen(!open)}
+                            className="me-2"
                         >
               {open ? <FaCaretDown /> : <FaCaretRight />}
             </span>
@@ -73,68 +64,53 @@ export default function Assignments() {
                             size="sm"
                             variant="light"
                             className="me-2 border rounded-pill px-3"
-                            onClick={(e) => e.stopPropagation()}
                         >
                             40% of Total
                         </Button>
-
-                        <Button
-                            size="sm"
-                            variant="light"
-                            className="border rounded-circle me-2"
-                            onClick={(e) => e.stopPropagation()}
-                        >
+                        <Button size="sm" variant="light" className="me-2 rounded-circle">
                             <FaPlus />
                         </Button>
-
-                        <IoEllipsisVertical
-                            className="text-secondary fs-5"
-                            onClick={(e) => e.stopPropagation()}
-                            style={{ cursor: "pointer" }}
-                        />
+                        <IoEllipsisVertical className="fs-5 text-secondary" />
                     </div>
                 </div>
 
-                {/* Items */}
+                {/* Assignment List */}
                 {open && (
-                    <ListGroup id="wd-assignment-list" variant="flush">
+                    <ListGroup variant="flush">
                         {assignmentsForCourse.map((a: any) => (
                             <ListGroup.Item
                                 key={a._id}
                                 className="d-flex align-items-center"
                                 style={{ borderLeft: "4px solid green" }}
                             >
-                                {/* Left icons */}
-                                <div
-                                    className="d-flex align-items-center justify-content-center me-3"
-                                    style={{ minWidth: "40px" }}
-                                >
+                                {/* Icons */}
+                                <div className="me-3 d-flex align-items-center">
                                     <BsGripVertical className="text-secondary me-2" />
                                     <FaRegFileAlt className="text-success" />
                                 </div>
 
-                                {/* Text content */}
+                                {/* Text */}
                                 <div className="flex-grow-1">
                                     <Link
                                         to={`/Kambaz/Courses/${cid}/Assignments/${a._id}`}
-                                        className="wd-assignment-link fw-bold text-decoration-none text-dark"
+                                        className="fw-bold text-decoration-none text-dark"
                                     >
                                         {a.title}
                                     </Link>
 
-                                    <div className="wd-assignment-details text-muted small">
-                                        <span className="text-danger">{a.moduleLabel ?? "Multiple Modules"}</span>
+                                    <div className="text-muted small">
+                                        <span className="text-danger">Multiple Modules</span>
                                         {" | "}
-                                        {a.availableText ?? "Not available yet"}
+                                        Not available yet
                                         {" | "}
-                                        Due {a.dueText ?? a.dueDate}
+                                        Due TBD
                                         {" | "}
-                                        {a.points} pts
+                                        __ pts
                                     </div>
                                 </div>
 
                                 {/* Right icons */}
-                                <div className="d-flex align-items-center ms-3">
+                                <div className="ms-3 d-flex align-items-center">
                                     <FaCheckCircle className="text-success me-3" />
                                     <IoEllipsisVertical className="text-secondary" />
                                 </div>
