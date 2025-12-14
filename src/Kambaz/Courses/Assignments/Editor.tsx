@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { Button, Card, Col, Form, InputGroup, Row } from "react-bootstrap";
+import { Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import * as db from "../../Database";
 
@@ -213,23 +213,21 @@ export default function AssignmentEditor() {
                     </Row>
                 </div>
 
+                {/* Bottom right buttons */}
                 <div className="d-flex justify-content-end gap-2 border-top pt-3 mt-4">
-                    <Button
-                        as={Link}
+                    <Link
                         to={`/Kambaz/Courses/${cid}/Assignments`}
-                        variant="light"
-                        className="border"
+                        className="btn btn-light border"
                     >
                         Cancel
-                    </Button>
+                    </Link>
 
-                    <Button
-                        as={Link}
+                    <Link
                         to={`/Kambaz/Courses/${cid}/Assignments`}
-                        variant="danger"
+                        className="btn btn-danger"
                     >
                         Save
-                    </Button>
+                    </Link>
                 </div>
             </Form>
         </div>
