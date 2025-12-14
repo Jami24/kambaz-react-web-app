@@ -17,6 +17,8 @@ export default function Kambaz() {
                 {/* Main content area */}
                 <div className="flex-fill wd-main-content-offset p-3">
                     <Routes>
+                        <Route index element={<Navigate to="Account/Signin" replace />} />
+
                         <Route path="/" element={<Navigate to="Account" />} />
                         <Route path="/Account/*" element={<Account />} />
                         <Route path="/Dashboard" element={<Dashboard />} />

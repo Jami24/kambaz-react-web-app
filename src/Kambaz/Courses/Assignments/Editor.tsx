@@ -2,8 +2,33 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 
+import * as db from "../../Database"; // ✅ adjust path if your Editor.tsx is elsewhere
+
 export default function AssignmentEditor() {
-    const { cid = "1234" } = useParams();
+    const { cid = "1234", aid = "101" } = useParams();
+
+    // Find the selected assignment for this course
+    const assignment = db.assignments.find(
+        (a: any) => a.course === cid && String(a._id) === String(aid)
+    );
+
+    // Keep page stable (no crash) if bad URL
+    if (!assignment) {
+        return (
+            <div id="wd-assignments-editor" className="mt-3">
+                <div className="alert alert-warning">
+                    Assignment not found.
+                </div>
+
+                <Link
+                    to={`/Kambaz/Courses/${cid}/Assignments`}
+                    className="btn btn-light border"
+                >
+                    Back
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div id="wd-assignments-editor" className="mt-3">
@@ -11,7 +36,7 @@ export default function AssignmentEditor() {
                 {/* Assignment Name */}
                 <Form.Group className="mb-3" controlId="wd-name">
                     <Form.Label className="fw-bold">Assignment Name</Form.Label>
-                    <Form.Control defaultValue="A1 - ENV + HTML" />
+                    <Form.Control defaultValue={assignment.title} />
                 </Form.Group>
 
                 {/* Description */}
@@ -19,16 +44,7 @@ export default function AssignmentEditor() {
                     <Form.Control
                         as="textarea"
                         rows={8}
-                        defaultValue={`The assignment is available online. Submit a link to the 
-                        landing page of your Web application running on Vercel.
-
-                        The landing page should include:
-                        - Your full name and section
-                        - Links to each lab assignment
-                        - Link to the Kambaz application
-                        - Links to relevant source code repositories
-                        
-                        The Kambaz app should include a link back to the landing page.`}
+                        defaultValue={assignment.description}
                     />
                 </Form.Group>
 
@@ -42,7 +58,11 @@ export default function AssignmentEditor() {
                             </Form.Label>
                         </Col>
                         <Col md={7}>
-                            <Form.Control id="wd-points" type="number" defaultValue={100} />
+                            <Form.Control
+                                id="wd-points"
+                                type="number"
+                                defaultValue={assignment.points}
+                            />
                         </Col>
                     </Row>
 
@@ -54,7 +74,10 @@ export default function AssignmentEditor() {
                             </Form.Label>
                         </Col>
                         <Col md={7}>
-                            <Form.Select id="wd-group" defaultValue="ASSIGNMENTS">
+                            <Form.Select
+                                id="wd-group"
+                                defaultValue={assignment.assignmentGroup ?? "ASSIGNMENTS"}
+                            >
                                 <option value="ASSIGNMENTS">ASSIGNMENTS</option>
                                 <option value="QUIZZES">QUIZZES</option>
                                 <option value="EXAMS">EXAMS</option>
@@ -71,7 +94,10 @@ export default function AssignmentEditor() {
                             </Form.Label>
                         </Col>
                         <Col md={7}>
-                            <Form.Select id="wd-display-grade-as" defaultValue="Percentage">
+                            <Form.Select
+                                id="wd-display-grade-as"
+                                defaultValue={assignment.displayGradeAs ?? "Percentage"}
+                            >
                                 <option>Percentage</option>
                                 <option>Points</option>
                                 <option>Complete/Incomplete</option>
@@ -91,7 +117,7 @@ export default function AssignmentEditor() {
                                 <Card.Body className="p-3">
                                     <Form.Select
                                         id="wd-submission-type"
-                                        defaultValue="Online"
+                                        defaultValue={assignment.submissionType ?? "Online"}
                                         className="mb-3"
                                     >
                                         <option>Online</option>
@@ -106,30 +132,38 @@ export default function AssignmentEditor() {
                                         type="checkbox"
                                         label="Text Entry"
                                         className="mb-2"
+                                        defaultChecked={Boolean(assignment.onlineEntryOptions?.textEntry)}
                                     />
                                     <Form.Check
                                         id="wd-website-url"
                                         type="checkbox"
                                         label="Website URL"
-                                        defaultChecked
                                         className="mb-2"
+                                        defaultChecked={
+                                            assignment.onlineEntryOptions?.websiteURL !== undefined
+                                                ? Boolean(assignment.onlineEntryOptions.websiteURL)
+                                                : true // ✅ keep your current defaultChecked behavior
+                                        }
                                     />
                                     <Form.Check
                                         id="wd-media-recordings"
                                         type="checkbox"
                                         label="Media Recordings"
                                         className="mb-2"
+                                        defaultChecked={Boolean(assignment.onlineEntryOptions?.mediaRecordings)}
                                     />
                                     <Form.Check
                                         id="wd-student-annotation"
                                         type="checkbox"
                                         label="Student Annotation"
                                         className="mb-2"
+                                        defaultChecked={Boolean(assignment.onlineEntryOptions?.studentAnnotation)}
                                     />
                                     <Form.Check
                                         id="wd-file-upload"
                                         type="checkbox"
                                         label="File Uploads"
+                                        defaultChecked={Boolean(assignment.onlineEntryOptions?.fileUploads)}
                                     />
                                 </Card.Body>
                             </Card>
@@ -148,7 +182,7 @@ export default function AssignmentEditor() {
                                 <Form.Label className="fw-bold mb-2">Assign to</Form.Label>
                                 <Form.Select
                                     id="wd-assign-to"
-                                    defaultValue="Everyone"
+                                    defaultValue={assignment.assignTo ?? "Everyone"}
                                     className="mb-3"
                                 >
                                     <option>Everyone</option>
@@ -161,7 +195,7 @@ export default function AssignmentEditor() {
                                     <Form.Control
                                         id="wd-due-date"
                                         type="date"
-                                        defaultValue="2024-05-13"
+                                        defaultValue={assignment.dueDate}
                                     />
                                     <InputGroup.Text>
                                         <FaCalendarAlt />
@@ -177,7 +211,7 @@ export default function AssignmentEditor() {
                                             <Form.Control
                                                 id="wd-available-from"
                                                 type="date"
-                                                defaultValue="2024-05-06"
+                                                defaultValue={assignment.availableFrom}
                                             />
                                             <InputGroup.Text>
                                                 <FaCalendarAlt />
@@ -190,7 +224,7 @@ export default function AssignmentEditor() {
                                             <Form.Control
                                                 id="wd-available-until"
                                                 type="date"
-                                                defaultValue="2024-05-20"
+                                                defaultValue={assignment.availableUntil}
                                             />
                                             <InputGroup.Text>
                                                 <FaCalendarAlt />

@@ -1,6 +1,19 @@
 import { ListGroup } from "react-bootstrap";
 import { NavLink, useParams } from "react-router-dom";
 
+type CourseLink =
+    | {
+    label: string;
+    path: string;
+    id: string;
+    external?: false;
+}
+    | {
+    label: string;
+    href: string;
+    external: true;
+};
+
 export default function CourseNavigation() {
     const { cid = "1234" } = useParams();
 
@@ -10,70 +23,51 @@ export default function CourseNavigation() {
                 isActive ? "active" : "text-danger"
             }`;
 
+    const links: CourseLink[] = [
+        { label: "Home", path: "Home", id: "wd-course-home-link" },
+        { label: "Modules", path: "Modules", id: "wd-course-modules-link" },
+        { label: "Piazza", href: "https://piazza.com/", external: true },
+        {
+            label: "Zoom",
+            href: "https://zoom.com/?cms_guid=false",
+            external: true,
+        },
+        {
+            label: "Assignments",
+            path: "Assignments",
+            id: "wd-course-assignments-link",
+        },
+        { label: "Quizzes", path: "Quizzes", id: "wd-course-quizzes-link" },
+        { label: "Grades", path: "Grades", id: "wd-course-grades-link" },
+        { label: "People", path: "People", id: "wd-course-people-link" },
+    ];
+
     return (
         <div id="wd-courses-navigation">
             <ListGroup className="wd fs-5 rounded-0">
-                <NavLink
-                    end
-                    to={`/Kambaz/Courses/${cid}/Home`}
-                    id="wd-course-home-link"
-                    className={makeClass}
-                >
-                    Home
-                </NavLink>
-                <NavLink
-                    to={`/Kambaz/Courses/${cid}/Modules`}
-                    id="wd-course-modules-link"
-                    className={makeClass}
-                >
-                    Modules
-                </NavLink>
-                <a
-                    href="https://piazza.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="list-group-item border-0 text-danger"
-                >
-                    Piazza
-                </a>
-
-                <a
-                    href="https://zoom.com/?cms_guid=false"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="list-group-item border-0 text-danger"
-                >
-                    Zoom
-                </a>
-
-                <NavLink
-                    to={`/Kambaz/Courses/${cid}/Assignments`}
-                    id="wd-course-assignments-link"
-                    className={makeClass}
-                >
-                    Assignments
-                </NavLink>
-                <NavLink
-                    to={`/Kambaz/Courses/${cid}/Quizzes`}
-                    id="wd-course-quizzes-link"
-                    className={makeClass}
-                >
-                    Quizzes
-                </NavLink>
-                <NavLink
-                    to={`/Kambaz/Courses/${cid}/Grades`}
-                    id="wd-course-grades-link"
-                    className={makeClass}
-                >
-                    Grades
-                </NavLink>
-                <NavLink
-                    to={`/Kambaz/Courses/${cid}/People`}
-                    id="wd-course-people-link"
-                    className={makeClass}
-                >
-                    People
-                </NavLink>
+                {links.map((link) =>
+                    link.external ? (
+                        <a
+                            key={link.label}
+                            href={link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="list-group-item border-0 text-danger"
+                        >
+                            {link.label}
+                        </a>
+                    ) : (
+                        <NavLink
+                            key={link.label}
+                            end={link.path === "Home"}
+                            to={`/Kambaz/Courses/${cid}/${link.path}`}
+                            id={link.id}
+                            className={makeClass}
+                        >
+                            {link.label}
+                        </NavLink>
+                    )
+                )}
             </ListGroup>
         </div>
     );
