@@ -1,57 +1,124 @@
+import { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
+import {
+    FaSearch,
+    FaCheckCircle,
+    FaRegFileAlt,
+    FaCaretDown,
+    FaCaretRight,
+    FaPlus,
+} from "react-icons/fa";
+import { BsGripVertical } from "react-icons/bs";
+import { IoEllipsisVertical } from "react-icons/io5";
+
+import * as db from "../../Database";
+
 export default function Assignments() {
+    const { cid = "RS101" } = useParams();
+    const [open, setOpen] = useState(true);
+
+    // Only assignments for this course
+    const assignmentsForCourse = db.assignments.filter(
+        (a: any) => a.course === cid
+    );
+
     return (
-        <div id="wd-assignments">
-            <input
-                placeholder="Search for Assignments"
-                id="wd-search-assignment"
-            />
-            <button id="wd-add-assignment-group">+ Group</button>
-            <button id="wd-add-assignment">+ Assignment</button>
+        <div id="wd-assignments" className="mt-3">
+            {/* Toolbar */}
+            <div className="d-flex align-items-center mb-3">
+                <Form className="flex-grow-1 me-3">
+                    <InputGroup>
+                        <InputGroup.Text>
+                            <FaSearch />
+                        </InputGroup.Text>
+                        <Form.Control placeholder="Search..." />
+                    </InputGroup>
+                </Form>
 
-            <h3 id="wd-assignments-title">
-                ASSIGNMENTS 40% of Total <button>+</button>
-            </h3>
+                <Button variant="secondary" className="me-2">
+                    + Group
+                </Button>
+                <Button variant="danger">+ Assignment</Button>
+            </div>
 
-            <ul id="wd-assignment-list">
-                <li className="wd-assignment-list-item">
-                    <a
-                        href="#/Kambaz/Courses/1234/Assignments/101"
-                        className="wd-assignment-link"
-                    >
-                        A1 - ENV + HTML
-                    </a>
-                    <div className="wd-assignment-details">
-                        Multiple Modules | Not available until May 6 @ 12:00am | Due May 13
-                        @ 11:59pm | 100 pts
+            <div className="border rounded">
+                {/* Header */}
+                <div className="d-flex justify-content-between align-items-center px-3 py-2 bg-light">
+                    <div className="d-flex align-items-center">
+                        <BsGripVertical className="text-secondary me-2" />
+
+                        <span
+                            style={{ width: 16, cursor: "pointer" }}
+                            onClick={() => setOpen(!open)}
+                            className="me-2"
+                        >
+              {open ? <FaCaretDown /> : <FaCaretRight />}
+            </span>
+
+                        <span className="fw-bold">ASSIGNMENTS</span>
                     </div>
-                </li>
 
-                <li className="wd-assignment-list-item">
-                    <a
-                        href="#/Kambaz/Courses/1234/Assignments/102"
-                        className="wd-assignment-link"
-                    >
-                        A2 - CSS + BOOTSTRAP
-                    </a>
-                    <div className="wd-assignment-details">
-                        Multiple Modules | Not available until May 13 @ 12:00am | Due May 20
-                        @ 11:59pm | 100 pts
+                    <div className="d-flex align-items-center">
+                        <Button
+                            size="sm"
+                            variant="light"
+                            className="me-2 border rounded-pill px-3"
+                        >
+                            40% of Total
+                        </Button>
+                        <Button size="sm" variant="light" className="me-2 rounded-circle">
+                            <FaPlus />
+                        </Button>
+                        <IoEllipsisVertical className="fs-5 text-secondary" />
                     </div>
-                </li>
+                </div>
 
-                <li className="wd-assignment-list-item">
-                    <a
-                        href="#/Kambaz/Courses/1234/Assignments/103"
-                        className="wd-assignment-link"
-                    >
-                        A3 - JAVASCRIPT + REACT
-                    </a>
-                    <div className="wd-assignment-details">
-                        Multiple Modules | Not available until May 20 @ 12:00am | Due May 27
-                        @ 11:59pm | 100 pts
-                    </div>
-                </li>
-            </ul>
+                {/* Assignment List */}
+                {open && (
+                    <ListGroup variant="flush">
+                        {assignmentsForCourse.map((a: any) => (
+                            <ListGroup.Item
+                                key={a._id}
+                                className="d-flex align-items-center"
+                                style={{ borderLeft: "4px solid green" }}
+                            >
+                                {/* Icons */}
+                                <div className="me-3 d-flex align-items-center">
+                                    <BsGripVertical className="text-secondary me-2" />
+                                    <FaRegFileAlt className="text-success" />
+                                </div>
+
+                                {/* Text */}
+                                <div className="flex-grow-1">
+                                    <Link
+                                        to={`/Kambaz/Courses/${cid}/Assignments/${a._id}`}
+                                        className="fw-bold text-decoration-none text-dark"
+                                    >
+                                        {a.title}
+                                    </Link>
+
+                                    <div className="text-muted small">
+                                        <span className="text-danger">Multiple Modules</span>
+                                        {" | "}
+                                        Not available yet
+                                        {" | "}
+                                        Due TBD
+                                        {" | "}
+                                        __ pts
+                                    </div>
+                                </div>
+
+                                {/* Right icons */}
+                                <div className="ms-3 d-flex align-items-center">
+                                    <FaCheckCircle className="text-success me-3" />
+                                    <IoEllipsisVertical className="text-secondary" />
+                                </div>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                )}
+            </div>
         </div>
     );
 }

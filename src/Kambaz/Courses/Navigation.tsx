@@ -1,18 +1,74 @@
-import { Link } from "react-router-dom";
+import { ListGroup } from "react-bootstrap";
+import { NavLink, useParams } from "react-router-dom";
+
+type CourseLink =
+    | {
+    label: string;
+    path: string;
+    id: string;
+    external?: false;
+}
+    | {
+    label: string;
+    href: string;
+    external: true;
+};
+
 export default function CourseNavigation() {
+    const { cid = "1234" } = useParams();
+
+    const makeClass =
+        ({ isActive }: { isActive: boolean }) =>
+            `list-group-item border-0 ${
+                isActive ? "active" : "text-danger"
+            }`;
+
+    const links: CourseLink[] = [
+        { label: "Home", path: "Home", id: "wd-course-home-link" },
+        { label: "Modules", path: "Modules", id: "wd-course-modules-link" },
+        { label: "Piazza", href: "https://piazza.com/", external: true },
+        {
+            label: "Zoom",
+            href: "https://zoom.com/?cms_guid=false",
+            external: true,
+        },
+        {
+            label: "Assignments",
+            path: "Assignments",
+            id: "wd-course-assignments-link",
+        },
+        { label: "Quizzes", path: "Quizzes", id: "wd-course-quizzes-link" },
+        { label: "Grades", path: "Grades", id: "wd-course-grades-link" },
+        { label: "People", path: "People", id: "wd-course-people-link" },
+    ];
+
     return (
         <div id="wd-courses-navigation">
-            <Link to="/Kambaz/Courses/1234/Home" id="wd-course-home-link">Home</Link><br/>
-            <Link to="/Kambaz/Courses/1234/Modules" id="wd-course-modules-link">Modules
-            </Link><br/>
-            <Link to="/Kambaz/Courses/1234/Piazza" id="wd-course-piazza-link">Piazza</Link><br/>
-            <Link to="/Kambaz/Courses/1234/Zoom" id="wd-course-zoom-link">Zoom</Link><br/>
-            <Link to="/Kambaz/Courses/1234/Assignments" id="wd-course-quizzes-link">
-                Assignments</Link><br/>
-            <Link to="/Kambaz/Courses/1234/Quizzes" id="wd-course-assignments-link">Quizzes
-            </Link><br/>
-            <Link to="/Kambaz/Courses/1234/Grades" id="wd-course-grades-link">Grades</Link><br/>
-            <Link to="/Kambaz/Courses/1234/People" id="wd-course-people-link">People</Link><br/>
+            <ListGroup className="wd fs-5 rounded-0">
+                {links.map((link) =>
+                    link.external ? (
+                        <a
+                            key={link.label}
+                            href={link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="list-group-item border-0 text-danger"
+                        >
+                            {link.label}
+                        </a>
+                    ) : (
+                        <NavLink
+                            key={link.label}
+                            end={link.path === "Home"}
+                            to={`/Kambaz/Courses/${cid}/${link.path}`}
+                            id={link.id}
+                            className={makeClass}
+                        >
+                            {link.label}
+                        </NavLink>
+                    )
+                )}
+            </ListGroup>
         </div>
-    );}
-
+    );
+}

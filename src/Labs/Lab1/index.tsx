@@ -2,6 +2,15 @@ export default function Lab1() {
     return (
         <div id="wd-lab1">
             <h2>Lab 1</h2>
+
+            <div id="wd-student-info" style={{ marginBottom: 16 }}>
+                <strong>Name:</strong>{" "}
+                <span id="wd-student-name">Jasmine Choong</span><br />
+                <strong>Section:</strong>{" "}
+                <span id="wd-student-section">CS4550.11597.202610</span>
+            </div>
+
+
             <h3>HTML Examples</h3>
 
             {/* 1.3.1 Heading Tags */}
@@ -185,7 +194,7 @@ export default function Lab1() {
                 <br />
                 <img
                     id="wd-teslabot"
-                    src="/images/teslabot.jpg"
+                    src="/images/stacked.jpg"
                     height="200px"
                 />
             </div>
@@ -354,7 +363,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
                 {/* Your GitHub repo link */}
                 <a
-                    href="https://github.com/Jami24/webdev"
+                    href="https://github.com/Jami24/kambaz-react-web-app"
                     id="wd-github"
                     target="_blank"
                     rel="noreferrer"

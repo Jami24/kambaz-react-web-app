@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body * {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Only offset when the sidebar is visible (≥768px) */
+@media (min-width: 768px) {
+    #wd-kambaz .wd-main-content-offset {
+        padding-left: 140px !important; /* enough to clear the 120px sidebar */
+    }
+}
+
+/* Highlight active course nav link */
+.list-group.wd > .list-group-item.active {
+    color: black;
+    background-color: white;
+    border-left: 3px solid black !important;
+}
+
+/* clickable area taller - more Canvas-like */
+.list-group.wd > .list-group-item {
+    padding: 12px 16px;
+    border: none;
+}
+
+/* MODULES & LESSONS (2.4.4) */
+
+/* Module card border */
+.wd-module {
+    border: 1px solid #c7cdd1 !important;
+}
+
+/* Lesson items inside modules */
+.wd-lesson {
+    border-top: 1px solid #c7cdd1 !important;
+    border-left: 3px solid green !important; /* Canvas green bar */
+}
+
+/* Canvas-style light gray module header */
+.bg-secondary {
+    --bs-secondary-rgb: 199, 205, 209 !important;
+}
+
+/* secondary buttons match Canvas */
+.btn-secondary {
+    --bs-btn-bg: #c7cdd1 !important;
+    --bs-btn-border-color: #c7cdd1 !important;
+    --bs-btn-color: black !important;
+}
