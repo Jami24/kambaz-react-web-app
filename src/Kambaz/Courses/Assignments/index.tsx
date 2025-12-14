@@ -12,7 +12,7 @@ import {
 import { BsGripVertical } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
 
-import * as db from "../../Database"; // <-- adjust if your file is elsewhere
+import * as db from "../../Database";
 
 export default function Assignments() {
     const { cid = "1234" } = useParams();
