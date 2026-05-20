@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
 import {
     FaSearch,
@@ -11,21 +12,30 @@ import {
 } from "react-icons/fa";
 import { BsGripVertical } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
-
-import * as db from "../../Database";
+import { deleteAssignment } from "./reducer";
 
 export default function Assignments() {
     const { cid = "RS101" } = useParams();
     const [open, setOpen] = useState(true);
 
-    // Only assignments for this course
-    const assignmentsForCourse = db.assignments.filter(
+    const dispatch = useDispatch();
+
+    const { currentUser } = useSelector(
+        (state: any) => state.accountReducer
+    );
+
+    const { assignments } = useSelector(
+        (state: any) => state.assignmentsReducer
+    );
+
+    const isFaculty = currentUser?.role === "FACULTY";
+
+    const assignmentsForCourse = assignments.filter(
         (a: any) => a.course === cid
     );
 
     return (
         <div id="wd-assignments" className="mt-3">
-            {/* Toolbar */}
             <div className="d-flex align-items-center mb-3">
                 <Form className="flex-grow-1 me-3">
                     <InputGroup>
@@ -36,14 +46,24 @@ export default function Assignments() {
                     </InputGroup>
                 </Form>
 
-                <Button variant="secondary" className="me-2">
-                    + Group
-                </Button>
-                <Button variant="danger">+ Assignment</Button>
+                {isFaculty && (
+                    <>
+                        <Button variant="secondary" className="me-2">
+                            + Group
+                        </Button>
+
+                        <Link
+                            to={`/Kambaz/Courses/${cid}/Assignments/new`}
+                            className="btn btn-danger"
+                            id="wd-add-assignment"
+                        >
+                            + Assignment
+                        </Link>
+                    </>
+                )}
             </div>
 
             <div className="border rounded">
-                {/* Header */}
                 <div className="d-flex justify-content-between align-items-center px-3 py-2 bg-light">
                     <div className="d-flex align-items-center">
                         <BsGripVertical className="text-secondary me-2" />
@@ -53,8 +73,8 @@ export default function Assignments() {
                             onClick={() => setOpen(!open)}
                             className="me-2"
                         >
-              {open ? <FaCaretDown /> : <FaCaretRight />}
-            </span>
+                            {open ? <FaCaretDown /> : <FaCaretRight />}
+                        </span>
 
                         <span className="fw-bold">ASSIGNMENTS</span>
                     </div>
@@ -67,14 +87,22 @@ export default function Assignments() {
                         >
                             40% of Total
                         </Button>
-                        <Button size="sm" variant="light" className="me-2 rounded-circle">
-                            <FaPlus />
-                        </Button>
-                        <IoEllipsisVertical className="fs-5 text-secondary" />
+
+                        {isFaculty && (
+                            <>
+                                <Button
+                                    size="sm"
+                                    variant="light"
+                                    className="me-2 rounded-circle"
+                                >
+                                    <FaPlus />
+                                </Button>
+                                <IoEllipsisVertical className="fs-5 text-secondary" />
+                            </>
+                        )}
                     </div>
                 </div>
 
-                {/* Assignment List */}
                 {open && (
                     <ListGroup variant="flush">
                         {assignmentsForCourse.map((a: any) => (
@@ -83,13 +111,11 @@ export default function Assignments() {
                                 className="d-flex align-items-center"
                                 style={{ borderLeft: "4px solid green" }}
                             >
-                                {/* Icons */}
                                 <div className="me-3 d-flex align-items-center">
                                     <BsGripVertical className="text-secondary me-2" />
                                     <FaRegFileAlt className="text-success" />
                                 </div>
 
-                                {/* Text */}
                                 <div className="flex-grow-1">
                                     <Link
                                         to={`/Kambaz/Courses/${cid}/Assignments/${a._id}`}
@@ -99,20 +125,41 @@ export default function Assignments() {
                                     </Link>
 
                                     <div className="text-muted small">
-                                        <span className="text-danger">Multiple Modules</span>
+                                        <span className="text-danger">
+                                            Multiple Modules
+                                        </span>
                                         {" | "}
                                         Not available yet
                                         {" | "}
-                                        Due TBD
+                                        Due {a.dueDate || "TBD"}
                                         {" | "}
-                                        __ pts
+                                        {a.points || "__"} pts
                                     </div>
                                 </div>
 
-                                {/* Right icons */}
                                 <div className="ms-3 d-flex align-items-center">
                                     <FaCheckCircle className="text-success me-3" />
-                                    <IoEllipsisVertical className="text-secondary" />
+
+                                    {isFaculty && (
+                                        <>
+                                            <button
+                                                className="btn btn-link text-danger p-0 me-3"
+                                                onClick={() => {
+                                                    const ok = window.confirm(
+                                                        "Are you sure you want to remove this assignment?"
+                                                    );
+
+                                                    if (ok) {
+                                                        dispatch(deleteAssignment(a._id));
+                                                    }
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+
+                                            <IoEllipsisVertical className="text-secondary" />
+                                        </>
+                                    )}
                                 </div>
                             </ListGroup.Item>
                         ))}

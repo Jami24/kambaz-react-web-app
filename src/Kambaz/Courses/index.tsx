@@ -1,4 +1,11 @@
-import { Navigate, Route, Routes, useParams, useLocation } from "react-router-dom";
+import {
+    Navigate,
+    Route,
+    Routes,
+    useParams,
+    useLocation,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 import { FaAlignJustify } from "react-icons/fa6";
 
 import CourseNavigation from "./Navigation";
@@ -8,15 +15,16 @@ import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import People from "./People";
 
-import * as db from "../Database";
-
 export default function Courses() {
     const { cid = "1234" } = useParams();
     const location = useLocation();
 
-    const course = db.courses.find((course) => course._id === cid);
+    const { courses } = useSelector(
+        (state: any) => state.coursesReducer
+    );
 
-    // Example: /Kambaz/Courses/CS1234/Modules  -> "Modules"
+    const course = courses.find((course: any) => course._id === cid);
+
     const section = location.pathname.split("/").pop();
 
     return (
@@ -34,11 +42,17 @@ export default function Courses() {
 
                 <div className="flex-fill">
                     <Routes>
-                        <Route path="/" element={<Navigate to="Home" replace />} />
+                        <Route
+                            path="/"
+                            element={<Navigate to="Home" replace />}
+                        />
                         <Route path="Home" element={<Home />} />
                         <Route path="Modules" element={<Modules />} />
                         <Route path="Assignments" element={<Assignments />} />
-                        <Route path="Assignments/:aid" element={<AssignmentEditor />} />
+                        <Route
+                            path="Assignments/:aid"
+                            element={<AssignmentEditor />}
+                        />
                         <Route path="People" element={<People />} />
                     </Routes>
                 </div>

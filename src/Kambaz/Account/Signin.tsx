@@ -1,6 +1,29 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "./reducer";
+import * as db from "../Database";
 
 export default function Signin() {
+    const [credentials, setCredentials] = useState<any>({});
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const signin = () => {
+        const user = db.users.find(
+            (u: any) =>
+                u.username === credentials.username &&
+                u.password === credentials.password
+        );
+
+        if (!user) {
+            return;
+        }
+
+        dispatch(setCurrentUser(user));
+        navigate("/Kambaz/Dashboard");
+    };
+
     return (
         <div id="wd-signin-screen" className="p-3" style={{ maxWidth: 350 }}>
             <h1 className="mb-3">Signin</h1>
@@ -9,6 +32,12 @@ export default function Signin() {
                 id="wd-username"
                 placeholder="username"
                 className="form-control mb-2"
+                onChange={(e) =>
+                    setCredentials({
+                        ...credentials,
+                        username: e.target.value,
+                    })
+                }
             />
 
             <input
@@ -16,15 +45,21 @@ export default function Signin() {
                 placeholder="password"
                 type="password"
                 className="form-control mb-2"
+                onChange={(e) =>
+                    setCredentials({
+                        ...credentials,
+                        password: e.target.value,
+                    })
+                }
             />
 
-            <Link
+            <button
                 id="wd-signin-btn"
-                to="/Kambaz/Dashboard"
                 className="btn btn-primary w-100 mb-2"
+                onClick={signin}
             >
                 Signin
-            </Link>
+            </button>
 
             <Link to="/Kambaz/Account/Signup" id="wd-signup-link">
                 Signup
