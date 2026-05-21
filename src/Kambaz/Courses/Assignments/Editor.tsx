@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { FaCalendarAlt } from "react-icons/fa";
 import * as client from "../client";
@@ -8,7 +8,6 @@ import * as client from "../client";
 export default function AssignmentEditor() {
     const { cid = "1234", aid = "new" } = useParams();
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const { currentUser } = useSelector(

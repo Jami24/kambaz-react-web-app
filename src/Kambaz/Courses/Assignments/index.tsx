@@ -15,7 +15,6 @@ import { IoEllipsisVertical } from "react-icons/io5";
 
 import {
     setAssignments,
-    deleteAssignment,
 } from "./reducer";
 
 import * as client from "../client";
@@ -58,18 +57,6 @@ export default function Assignments() {
         dispatch(
             setAssignments(
                 assignments.filter((assignment: any) => assignment._id !== assignmentId)
-            )
-        );
-    };
-
-    const onUpdateAssignment = async (assignment: any) => {
-        await client.updateAssignment(assignment);
-
-        dispatch(
-            setAssignments(
-                assignments.map((a: any) =>
-                    a._id === assignment._id ? assignment : a
-                )
             )
         );
     };

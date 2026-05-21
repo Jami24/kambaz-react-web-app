@@ -7,8 +7,6 @@ import * as client from "./Courses/client";
 
 import {
     addCourse,
-    deleteCourse,
-    updateCourse,
     setCourse,
     setCourses,
 } from "./Courses/reducer";
@@ -78,7 +76,7 @@ export default function Dashboard() {
 
         dispatch(
             setCourses(
-                courses.map((c) => {
+                courses.map((c: any) => {
                     if (c._id === course._id) {
                         return course;
                     } else {
