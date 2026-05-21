@@ -13,13 +13,14 @@ export default function Profile() {
         (state: any) => state.accountReducer
     );
 
-    const fetchProfile = () => {
-        if (!currentUser) {
+    const fetchProfile = async () => {
+        try {
+            const currentUser = await client.profile();
+            dispatch(setCurrentUser(currentUser));
+            setProfile(currentUser);
+        } catch (error) {
             navigate("/Kambaz/Account/Signin");
-            return;
         }
-
-        setProfile(currentUser);
     };
 
     const updateProfile = async () => {
