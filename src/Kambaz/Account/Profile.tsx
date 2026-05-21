@@ -9,14 +9,17 @@ export default function Profile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const fetchProfile = async () => {
-        try {
-            const currentUser = await client.profile();
-            dispatch(setCurrentUser(currentUser));
-            setProfile(currentUser);
-        } catch (error) {
+    const { currentUser } = useSelector(
+        (state: any) => state.accountReducer
+    );
+
+    const fetchProfile = () => {
+        if (!currentUser) {
             navigate("/Kambaz/Account/Signin");
+            return;
         }
+
+        setProfile(currentUser);
     };
 
     const updateProfile = async () => {
