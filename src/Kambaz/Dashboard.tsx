@@ -1,18 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Button, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import * as client from "./Courses/client";
+
 
 import {
     addCourse,
     deleteCourse,
     updateCourse,
     setCourse,
+    setCourses,
 } from "./Courses/reducer";
 
 import {
     enroll,
     unenroll,
+    setEnrollments,
 } from "./enrollmentsReducer";
 
 export default function Dashboard() {
@@ -34,17 +38,7 @@ export default function Dashboard() {
 
     const isFaculty = currentUser?.role === "FACULTY";
 
-    const enrolledCourses = courses.filter((course: any) =>
-        enrollments.some(
-            (enrollment: any) =>
-                enrollment.user === currentUser?._id &&
-                enrollment.course === course._id
-        )
-    );
-
-    const displayedCourses = showAllCourses
-        ? courses
-        : enrolledCourses;
+    const displayedCourses = courses;
 
     const isEnrolled = (courseId: string) => {
         return enrollments.some(
@@ -53,6 +47,89 @@ export default function Dashboard() {
                 enrollment.course === courseId
         );
     };
+
+    const onAddNewCourse = async () => {
+        const newCourse = await client.createCourse(course);
+
+        dispatch(addCourse(newCourse));
+
+        dispatch(
+            enroll({
+                user: currentUser._id,
+                course: newCourse._id,
+            })
+        );
+    };
+
+    const onDeleteCourse = async (courseId: string) => {
+        await client.deleteCourse(courseId);
+
+        dispatch(
+            setCourses(
+                courses.filter(
+                    (course: any) => course._id !== courseId
+                )
+            )
+        );
+    };
+
+    const onUpdateCourse = async () => {
+        await client.updateCourse(course);
+
+        dispatch(
+            setCourses(
+                courses.map((c) => {
+                    if (c._id === course._id) {
+                        return course;
+                    } else {
+                        return c;
+                    }
+                })
+            )
+        );
+    };
+
+    const fetchCourses = async () => {
+        const courses = showAllCourses
+            ? await client.fetchAllCourses()
+            : await client.findMyCourses();
+
+        dispatch(setCourses(courses));
+    };
+
+    const fetchEnrollments = async () => {
+        if (!currentUser?._id) {
+            return;
+        }
+
+        const enrollments = await client.findEnrollmentsForUser(currentUser._id);
+        dispatch(setEnrollments(enrollments));
+    };
+
+    const onEnroll = async (courseId: string) => {
+        const enrollment = await client.enrollUserInCourse(
+            currentUser._id,
+            courseId
+        );
+
+        dispatch(enroll(enrollment));
+    };
+
+    const onUnenroll = async (courseId: string) => {
+        await client.unenrollUserFromCourse(currentUser._id, courseId);
+
+        dispatch(
+            unenroll({
+                user: currentUser._id,
+                course: courseId,
+            })
+        );
+    };
+
+    useEffect(() => {
+        fetchCourses();
+        fetchEnrollments();
+    }, [showAllCourses, currentUser]);
 
     return (
         <div id="wd-dashboard">
@@ -80,15 +157,15 @@ export default function Dashboard() {
                         <button
                             className="btn btn-primary float-end"
                             id="wd-add-new-course-click"
-                            onClick={() => dispatch(addCourse())}
+                            onClick={onAddNewCourse}
                         >
                             Add
                         </button>
 
                         <button
-                            className="btn btn-warning float-end me-2"
+                            onClick={onUpdateCourse}
+                            className="btn btn-secondary float-end"
                             id="wd-update-course-click"
-                            onClick={() => dispatch(updateCourse())}
                         >
                             Update
                         </button>
@@ -176,13 +253,7 @@ export default function Dashboard() {
                                                 className="float-end"
                                                 onClick={(event) => {
                                                     event.preventDefault();
-
-                                                    dispatch(
-                                                        unenroll({
-                                                            user: currentUser._id,
-                                                            course: course._id,
-                                                        })
-                                                    );
+                                                    onUnenroll(course._id);
                                                 }}
                                             >
                                                 Unenroll
@@ -193,13 +264,7 @@ export default function Dashboard() {
                                                 className="float-end"
                                                 onClick={(event) => {
                                                     event.preventDefault();
-
-                                                    dispatch(
-                                                        enroll({
-                                                            user: currentUser._id,
-                                                            course: course._id,
-                                                        })
-                                                    );
+                                                    onEnroll(course._id);
                                                 }}
                                             >
                                                 Enroll
@@ -214,12 +279,7 @@ export default function Dashboard() {
                                                     id="wd-delete-course-click"
                                                     onClick={(event) => {
                                                         event.preventDefault();
-
-                                                        dispatch(
-                                                            deleteCourse(
-                                                                course._id
-                                                            )
-                                                        );
+                                                        onDeleteCourse(course._id);
                                                     }}
                                                 >
                                                     Delete

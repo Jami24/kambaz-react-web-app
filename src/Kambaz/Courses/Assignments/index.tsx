@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Form, InputGroup, ListGroup } from "react-bootstrap";
@@ -12,11 +12,18 @@ import {
 } from "react-icons/fa";
 import { BsGripVertical } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
-import { deleteAssignment } from "./reducer";
+
+import {
+    setAssignments,
+    deleteAssignment,
+} from "./reducer";
+
+import * as client from "../client";
 
 export default function Assignments() {
     const { cid = "RS101" } = useParams();
     const [open, setOpen] = useState(true);
+    const [assignmentName, setAssignmentName] = useState("");
 
     const dispatch = useDispatch();
 
@@ -30,9 +37,46 @@ export default function Assignments() {
 
     const isFaculty = currentUser?.role === "FACULTY";
 
-    const assignmentsForCourse = assignments.filter(
-        (a: any) => a.course === cid
-    );
+    const fetchAssignments = async () => {
+        const assignments = await client.findAssignmentsForCourse(cid as string);
+        dispatch(setAssignments(assignments));
+    };
+
+    const onCreateAssignment = async () => {
+        const assignment = await client.createAssignmentForCourse(cid as string, {
+            title: assignmentName,
+            course: cid,
+        });
+
+        dispatch(setAssignments([...assignments, assignment]));
+        setAssignmentName("");
+    };
+
+    const onDeleteAssignment = async (assignmentId: string) => {
+        await client.deleteAssignment(assignmentId);
+
+        dispatch(
+            setAssignments(
+                assignments.filter((assignment: any) => assignment._id !== assignmentId)
+            )
+        );
+    };
+
+    const onUpdateAssignment = async (assignment: any) => {
+        await client.updateAssignment(assignment);
+
+        dispatch(
+            setAssignments(
+                assignments.map((a: any) =>
+                    a._id === assignment._id ? assignment : a
+                )
+            )
+        );
+    };
+
+    useEffect(() => {
+        fetchAssignments();
+    }, [cid]);
 
     return (
         <div id="wd-assignments" className="mt-3">
@@ -73,8 +117,8 @@ export default function Assignments() {
                             onClick={() => setOpen(!open)}
                             className="me-2"
                         >
-                            {open ? <FaCaretDown /> : <FaCaretRight />}
-                        </span>
+              {open ? <FaCaretDown /> : <FaCaretRight />}
+            </span>
 
                         <span className="fw-bold">ASSIGNMENTS</span>
                     </div>
@@ -94,9 +138,11 @@ export default function Assignments() {
                                     size="sm"
                                     variant="light"
                                     className="me-2 rounded-circle"
+                                    onClick={onCreateAssignment}
                                 >
                                     <FaPlus />
                                 </Button>
+
                                 <IoEllipsisVertical className="fs-5 text-secondary" />
                             </>
                         )}
@@ -105,7 +151,7 @@ export default function Assignments() {
 
                 {open && (
                     <ListGroup variant="flush">
-                        {assignmentsForCourse.map((a: any) => (
+                        {assignments.map((a: any) => (
                             <ListGroup.Item
                                 key={a._id}
                                 className="d-flex align-items-center"
@@ -125,9 +171,9 @@ export default function Assignments() {
                                     </Link>
 
                                     <div className="text-muted small">
-                                        <span className="text-danger">
-                                            Multiple Modules
-                                        </span>
+                    <span className="text-danger">
+                      Multiple Modules
+                    </span>
                                         {" | "}
                                         Not available yet
                                         {" | "}
@@ -150,7 +196,7 @@ export default function Assignments() {
                                                     );
 
                                                     if (ok) {
-                                                        dispatch(deleteAssignment(a._id));
+                                                        onDeleteAssignment(a._id);
                                                     }
                                                 }}
                                             >
