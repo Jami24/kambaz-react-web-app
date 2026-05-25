@@ -109,13 +109,12 @@ export default function WorkingWithArraysAsynchronously() {
                 />
             </h4>
 
-            <a
+            <button
                 className="btn btn-warning mb-3"
-                href="http://localhost:4000/lab5/todos/2/delete"
-                target="_blank"
+                onClick={() => deleteTodo({ id: 123 })}
             >
-                Delete Todo 2 From Server
-            </a>
+                Test Delete Error
+            </button>
 
             <ListGroup>
                 {todos.map((todo) => (
