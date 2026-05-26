@@ -137,6 +137,14 @@ export const findEnrollmentsForUser = async (userId: string) => {
     return response.data;
 };
 
+export const findUsersForCourse = async (courseId: string) => {
+    const response = await axiosWithCredentials.get(
+        `${COURSES_API}/${courseId}/users`
+    );
+
+    return response.data;
+};
+
 export const findAllEnrollments = async () => {
     const response = await axios.get(ENROLLMENTS_API);
 
