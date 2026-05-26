@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import PeopleDetails from "./Details";
 import * as client from "../client";
 
-export default function People() {
+export default function People({ users: usersProp }: { users?: any[] }) {
     const { cid = "" } = useParams();
     const [users, setUsers] = useState<any[]>([]);
 
@@ -19,8 +19,12 @@ export default function People() {
     };
 
     useEffect(() => {
-        fetchUsersForCourse();
-    }, [cid]);
+        if (!usersProp) {
+            fetchUsersForCourse();
+        }
+    }, [cid, usersProp]);
+
+    const usersToDisplay = usersProp || users;
 
     return (
         <div id="wd-people-table">
@@ -37,8 +41,9 @@ export default function People() {
                     <th>Total Activity</th>
                 </tr>
                 </thead>
+
                 <tbody>
-                {users.map((user: any) => (
+                {usersToDisplay.map((user: any) => (
                     <tr key={user._id}>
                         <td className="wd-full-name text-nowrap">
                             <Link
