@@ -36,12 +36,23 @@ export default function AccountNavigation() {
                 )}
 
                 {currentUser && (
-                    <NavLink
-                        to="/Kambaz/Account/Profile"
-                        className={makeClass}
-                    >
-                        Profile
-                    </NavLink>
+                    <>
+                        <NavLink
+                            to="/Kambaz/Account/Profile"
+                            className={makeClass}
+                        >
+                            Profile
+                        </NavLink>
+
+                        {currentUser.role === "ADMIN" && (
+                            <NavLink
+                                to="/Kambaz/Account/Users"
+                                className={makeClass}
+                            >
+                                Users
+                            </NavLink>
+                        )}
+                    </>
                 )}
             </ListGroup>
         </div>
